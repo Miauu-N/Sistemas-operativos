@@ -25,18 +25,22 @@ def main(procesos,q,ti):
         cola.append(procesos.pop())
 
 
-    while len(cola) > 0: # esta mal el mayor a cero,porque en un momento van a quedar en cero np se que hacer aca
-        proceso = cola.pop()
-        burst = proceso.bursts.pop()
-        if burst.tiempo > q:
-            burst.tiempo -= q
-            proceso.bursts.insert(burst,0)
-            reloj += q
-        elif burst.tiempo <= q:
-            reloj += burst.tiempo # ACA TENEMOS Q PONER EN 0 EL tiempo del proceso? lo saco a la mieda directamente
-            if len(proceso.bursts) != 0: # esto es para q si ya no le queda mas nada termine? mas o menos
-                burst = proceso.bursts.pop()
-                proceso.endisco = burst.tiempo
+    while len(cola) > 0:
+        proceso = cola.popleft()
+        if proceso.endisco == 0:
+            burst = proceso.bursts.pop()
+            if burst.tiempo > q:
+                burst.tiempo -= q
+                proceso.bursts.insert(0,burst)
+                cola.append(proceso)
+                reloj += q
+            elif burst.tiempo <= q:
+                reloj += burst.tiempo# ACA TENEMOS Q PONER EN 0 EL tiempo del proceso? lo saco a la mieda directamente
+                if len(proceso.bursts) != 0:
+                    burst = proceso.bursts.pop()
+                    proceso.endisco = burst.tiempo + reloj
+                if len(proceso.bursts) != 0:
+                    cola.append(proceso)
 
 
         print(proceso.nro)
